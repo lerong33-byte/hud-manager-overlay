@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>H.U.D Manager Overlay</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="overlay.css">
+</head>
+<body>
+
+<!-- ── COLLAPSED PILL ─────────────────────────────────────── -->
+<div id="pill">
+  <div id="pill-drag" title="Drag to move"></div>
+  <div id="pill-logo">
+    <span class="pill-brand">H.U.D</span>
+    <span class="pill-sub">MANAGER</span>
+  </div>
+  <div id="pill-actions">
+    <button class="pill-btn" id="btn-trade"    title="Trade Routes">⛟</button>
+    <button class="pill-btn" id="btn-starmap"  title="Star Map">⌖</button>
+    <button class="pill-btn" id="btn-ai"       title="AI Assist">◈</button>
+    <button class="pill-btn pill-open" id="btn-open" title="Open panel">▾</button>
+  </div>
+</div>
+
+<!-- ── EXPANDED PANEL ─────────────────────────────────────── -->
+<div id="panel" hidden>
+  <div id="panel-bar">
+    <div id="panel-drag"></div>
+    <div id="panel-title">
+      <span class="pill-brand">H.U.D</span>
+      <span class="pill-sub">MANAGER</span>
+    </div>
+    <div id="panel-tabs">
+      <button class="ptab" data-page="/">HOME</button>
+      <button class="ptab" data-page="/trade">TRADE</button>
+      <button class="ptab" data-page="/starmap">STARMAP</button>
+      <button class="ptab" data-page="/recommend">AI ASSIST</button>
+    </div>
+    <div id="panel-ctrl">
+      <button id="btn-collapse" title="Collapse to pill">▴ HIDE</button>
+      <button id="btn-site"     title="Open in browser">⇱</button>
+    </div>
+  </div>
+  <webview id="site-view" src="https://hud-manager.com" allowpopups></webview>
+</div>
+
+<script src="overlay.js"></script>
+</body>
+</html>
