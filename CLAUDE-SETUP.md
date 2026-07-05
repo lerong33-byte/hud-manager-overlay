@@ -65,6 +65,30 @@ Then merge this `hooks` block into `~/.claude/settings.json`:
 }
 ```
 
+## 7. Enable remote SSH so Leron's main Claude (on the MSI machine) can connect
+This lets the primary machine's Claude SSH in for remote help/debugging. Run it as the normal user (`legordo`), NOT via sudo for the key parts.
+```bash
+# install + start the SSH server (Bazzite/Fedora Atomic may need a reboot after rpm-ostree)
+command -v sshd >/dev/null 2>&1 || { command -v rpm-ostree >/dev/null && sudo rpm-ostree install -y openssh-server; command -v dnf >/dev/null && sudo dnf install -y openssh-server; command -v apt >/dev/null && sudo apt install -y openssh-server; }
+sudo systemctl enable --now sshd 2>/dev/null || sudo systemctl enable --now ssh 2>/dev/null || true
+sudo firewall-cmd --add-service=ssh --permanent 2>/dev/null && sudo firewall-cmd --reload 2>/dev/null || true
+
+# authorize the MSI Claude key
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+KEY='ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKAysu46wJpKGFgSqcEyrtyUPcVleKyq8LoZ63i/FT2f msi-claude->gamebeast'
+grep -qF "$KEY" ~/.ssh/authorized_keys 2>/dev/null || echo "$KEY" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+# CRITICAL on SELinux systems (Bazzite/Fedora): relabel or sshd IGNORES the key file
+command -v restorecon >/dev/null 2>&1 && restorecon -R -v ~/.ssh || true
+sudo systemctl restart sshd 2>/dev/null || sudo systemctl restart ssh 2>/dev/null || true
+
+# verify the key is really there + correctly labeled, then report the IP
+echo "AUTH KEYS:"; cat ~/.ssh/authorized_keys; ls -laZ ~/.ssh 2>/dev/null || ls -la ~/.ssh
+echo "SSH READY as $(whoami) @ $(hostname -I 2>/dev/null | awk '{print $1}')"
+```
+**If sshd was just installed via rpm-ostree on Bazzite, a REBOOT is required before it runs** — reboot, then re-run just this section. After this, Leron's main Claude connects with: `ssh -i ~/.ssh/gamebeast_ed25519 legordo@<ip>`.
+
 ## Done
 Run `claude` inside `~/hud-manager-fresh`. It now shares the same repo **and** memory as every other machine.
 
